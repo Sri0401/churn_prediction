@@ -1,4 +1,4 @@
-name: Train Model on Data Update
+name: Train and Test Churn Model
 
 on:
   push:
@@ -6,9 +6,10 @@ on:
       - 'data/raw/**'
       - 'src/**'
       - 'requirements.txt'
+      - '.github/workflows/train.yml'
 
 jobs:
-  train:
+  build-train-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -25,6 +26,9 @@ jobs:
         run: python src/preprocess.py
       - name: Train model
         run: python src/train_model.py
+      - name: Run tests
+        run: |
+          python -m unittest discover -s tests -p "test_*.py"
       - name: Upload model artifact
         uses: actions/upload-artifact@v4
         with:
