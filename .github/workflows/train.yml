@@ -1,0 +1,32 @@
+name: Train Model on Data Update
+
+on:
+  push:
+    paths:
+      - 'data/raw/**'
+      - 'src/**'
+      - 'requirements.txt'
+
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run preprocessing
+        run: python src/preprocess.py
+      - name: Train model
+        run: python src/train_model.py
+      - name: Upload model artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: churn-model
+          path: models/rf_telco_churn.pkl
